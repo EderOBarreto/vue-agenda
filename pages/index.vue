@@ -14,13 +14,15 @@
       </thead>
       <tbody class="body">
         <tr v-for="(week, index) of getWeeks" :key="index" class="row">
-          <td
+          <calendar-day
             v-for="d of week"
             :key="d.day"
-            :class="['day', { '-empty': d.isCurrentMonth }]"
-          >
-            {{ d.day }}
-          </td>
+            :date="d.day"
+            :reminders="[reminder, reminder]"
+            :is-current-month="d.isCurrentMonth"
+            :is-current-day="d.isCurrentDay"
+            :is-weekend="d.isWeekend"
+          />
         </tr>
       </tbody>
     </table>
@@ -36,10 +38,22 @@ import { chunkArray } from '~/utils/chunckArray'
 
 import { IDay } from '~/core/models/days'
 
-@Component
+import CalendarDay from '~/components/CalendarDay.vue'
+
+@Component({
+  components: { CalendarDay },
+})
 class Index extends Vue {
   calInstance = getModule(Calendar, this.$store)
   weekdays = moment.weekdays()
+
+  reminder = {
+    subject: 'This is a great test',
+    day: '1',
+    time: '12:00',
+    city: 'Lindoia',
+    color: '#f00',
+  }
 
   previousMonth() {
     this.calInstance.previousMonth()
@@ -109,7 +123,17 @@ class Index extends Vue {
   }
 
   get getWeeks() {
-    return chunkArray(this.getSlots, 7)
+    const mat = chunkArray(this.getSlots, 7)
+    return mat.map((week) => {
+      const rest = week.slice(1, -1)
+      const first = week[0]
+      const last = week[6]
+      return [
+        { ...first, isWeekend: true },
+        ...rest.map((date) => ({ ...date, isWeekend: false })),
+        { ...last, isWeekend: true },
+      ]
+    })
   }
 }
 
@@ -148,6 +172,10 @@ export default Index
 
 .calendar-page > .control > .title {
   font-weight: 500;
+}
+
+.calendar-page > .table {
+  border-collapse: collapse;
 }
 
 .calendar-page > .table > .header {
