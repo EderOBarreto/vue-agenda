@@ -1,67 +1,50 @@
 <template>
-  <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">
-        vue-agenda
-      </h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
-    </div>
+  <div class="calendar-page">
+    <h1 class="title">Vue agenda</h1>
+    <div>TOTAL: {{ counterModuleInstance.count }}</div>
+    <button class="add" @click="add">+</button>
+    <button class="subtract" @click="subtract">-</button>
   </div>
 </template>
-
 <script lang="ts">
-import Vue from 'vue'
+import { Component, Vue } from 'vue-property-decorator'
+import { getModule } from 'vuex-module-decorators'
+import CounterModule from '~/store/counter'
 
-export default Vue.extend({})
+@Component
+class CalendarPage extends Vue {
+  counterModuleInstance = getModule(CounterModule, this.$store)
+
+  add() {
+    this.counterModuleInstance.increment(1)
+  }
+
+  subtract() {
+    this.counterModuleInstance.decrement(1)
+  }
+}
+
+export default CalendarPage
 </script>
 
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+<style lang="scss" scoped>
+.calendar-page {
+  height: 100vh;
+  background-color: green;
 }
 
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
+.calendar-page > .title {
+  font-size: 32px;
+  color: white;
 }
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
+.calendar-page > .add {
+  background: red;
+  color: white;
 }
 
-.links {
-  padding-top: 15px;
+.calendar-page > .subtract {
+  background: white;
+  color: black;
 }
 </style>
