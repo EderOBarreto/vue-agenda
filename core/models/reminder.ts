@@ -1,6 +1,6 @@
 export interface IReminder {
   subject: string
-  day: string
+  date: string
   time: string
   city: string
   color?: string

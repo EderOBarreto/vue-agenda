@@ -4,18 +4,18 @@
     @click.self="createReminder"
   >
     <strong :class="['day', { '-active-month': isCurrentMonth }]">
-      {{ date }}
+      {{ getMonthDay }}
     </strong>
     <div class="reminders">
       <div
-        v-for="(remind, index) of reminders"
+        v-for="(reminder, index) of getReminders"
         :key="index"
         class="reminder"
-        :style="`background:${remind.color}`"
-        @click="showReminder"
+        :style="`background:${reminder.color}`"
+        @click="showReminder({ reminder, index })"
       >
         <span class="text">
-          {{ remind.subject }}
+          {{ reminder.subject }}
         </span>
       </div>
     </div>
@@ -23,26 +23,41 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
+import { getModule } from 'vuex-module-decorators'
+
+import Calendar from '~/store/calendar'
 import { IReminder } from '~/core/models/reminder'
 
 @Component
 class CalendarDay extends Vue {
-  @Prop() readonly date!: number
-  // @Prop() readonly date!: number change to Date instead
-  @Prop() readonly reminders!: IReminder[]
+  @Prop() readonly date!: string
   @Prop() readonly isCurrentMonth!: boolean
   @Prop() readonly isCurrentDay!: boolean
   @Prop({ default: false }) readonly isWeekend!: boolean
-
   // TODO: more than 3 reminders
   // show more field
 
-  showReminder() {
-    // TODO: show selected reminder
+  calInstance = getModule(Calendar, this.$store)
+
+  get getMonthDay() {
+    return new Date(this.date).getUTCDate()
+  }
+
+  showReminder(props: { reminder: IReminder; index: number }) {
+    this.calInstance.setCurrentReminder(props)
+    this.$emit('show-reminder')
   }
 
   createReminder() {
-    // TODO: show reminder form
+    this.calInstance.clearSelectedReminder()
+    this.$emit('create-reminder', this.date)
+  }
+
+  get getReminders() {
+    if (this.calInstance.reminders[this.date]) {
+      return this.calInstance.reminders[this.date]
+    }
+    return []
   }
 }
 

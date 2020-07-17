@@ -1,5 +1,5 @@
 export interface IDay {
-  day: number
+  day: string
   isCurrentMonth: boolean
   isCurrentDay: boolean
 }

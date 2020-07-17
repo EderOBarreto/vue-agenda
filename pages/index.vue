@@ -18,14 +18,19 @@
             v-for="d of week"
             :key="d.day"
             :date="d.day"
-            :reminders="[reminder, reminder]"
             :is-current-month="d.isCurrentMonth"
             :is-current-day="d.isCurrentDay"
             :is-weekend="d.isWeekend"
+            @open-modal="openModal"
+            @create-reminder="createReminder"
+            @show-reminder="openModal"
           />
         </tr>
       </tbody>
     </table>
+    <modal ref="modal">
+      <reminder :date="remindDate" @close-modal="closeModal" />
+    </modal>
   </div>
 </template>
 <script lang="ts">
@@ -37,22 +42,45 @@ import Calendar from '~/store/calendar'
 import { chunkArray } from '~/utils/chunckArray'
 
 import { IDay } from '~/core/models/days'
+// import { IReminder } from '~/core/models/reminder'
 
 import CalendarDay from '~/components/CalendarDay.vue'
+import Reminder from '~/components/Reminder.vue'
+import Modal from '~/components/Modal.vue'
 
 @Component({
-  components: { CalendarDay },
+  components: { CalendarDay, Modal, Reminder },
 })
 class Index extends Vue {
-  calInstance = getModule(Calendar, this.$store)
-  weekdays = moment.weekdays()
+  $refs!: {
+    modal: Modal
+  }
 
-  reminder = {
-    subject: 'This is a great test',
-    day: '1',
-    time: '12:00',
-    city: 'Lindoia',
-    color: '#f00',
+  calInstance = getModule(Calendar, this.$store)
+
+  weekdays = moment.weekdays()
+  // selectedRemind!: IReminder
+  remindDate = ''
+
+  created() {
+    this.remindDate = moment(this.calInstance.currentDate).format('YYYY-MM-DD')
+  }
+
+  private openModal() {
+    this.$refs.modal.openModal()
+  }
+
+  clearSelectedReminder() {
+    this.calInstance.clearSelectedReminder()
+  }
+
+  closeModal() {
+    this.$refs.modal.closeModal()
+  }
+
+  createReminder(date: string) {
+    this.openModal()
+    this.remindDate = date
   }
 
   previousMonth() {
@@ -73,13 +101,15 @@ class Index extends Vue {
 
   get firstDaysOfMonth() {
     let previousDays: IDay[] = []
-    const firstDay = Number(this.calInstance.firstDay)
-    const lastDayPreviousMonth = Number(this.calInstance.lastDayPreviousMonth)
+    const firstDayofWeek = moment(this.calInstance.firstDay).day()
+    const lastDayPreviousMonth = this.calInstance.lastDayPreviousMonth
 
-    for (let i = 0; i < firstDay; i++) {
+    for (let i = 0; i < firstDayofWeek; i++) {
       previousDays = [
         {
-          day: lastDayPreviousMonth - i,
+          day: moment(lastDayPreviousMonth)
+            .subtract(i, 'days')
+            .format('YYYY-MM-DD'),
           isCurrentMonth: false,
           isCurrentDay: false,
         },
@@ -96,7 +126,9 @@ class Index extends Vue {
     for (let i = daysInMonth; i > 0; i--) {
       monthDays = [
         {
-          day: i,
+          day: moment(this.calInstance.lastDayPreviousMonth)
+            .add(i, 'day')
+            .format('YYYY-MM-DD'),
           isCurrentMonth: true,
           isCurrentDay: i === Number(this.calInstance.currentMonthDay),
         },
@@ -109,12 +141,17 @@ class Index extends Vue {
   get getSlots() {
     let totalSlots = [...this.firstDaysOfMonth, ...this.daysInMonth]
     const calendarRest = totalSlots.length % 7
+    const lastMonthDay = totalSlots[totalSlots.length - 1]
 
     if (calendarRest > 0) {
       for (let i = 1; i <= 7 - calendarRest; i++) {
         totalSlots = [
           ...totalSlots,
-          { day: i, isCurrentMonth: false, isCurrentDay: false },
+          {
+            day: moment(lastMonthDay.day).add(i, 'days').format('YYYY-MM-DD'),
+            isCurrentMonth: false,
+            isCurrentDay: false,
+          },
         ]
       }
     }
