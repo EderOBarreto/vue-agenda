@@ -70,3 +70,13 @@ $ yarn generate
 ```
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+
+## Getting started
+
+To run the project you just need to copy the .env.example, according to the command below:
+
+`cp .env.example .env`
+
+Then run `yarn dev` and access the `localhost:3000`
+
+That's it
