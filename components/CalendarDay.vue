@@ -26,6 +26,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import { getModule } from 'vuex-module-decorators'
 
 import Calendar from '~/store/calendar'
+
 import { IReminder } from '~/core/models/reminder'
 
 @Component
@@ -55,7 +56,9 @@ class CalendarDay extends Vue {
 
   get getReminders() {
     if (this.calInstance.reminders[this.date]) {
-      return this.calInstance.reminders[this.date]
+      return [...this.calInstance.reminders[this.date]].sort((a, b) => {
+        return a.time.localeCompare(b.time)
+      })
     }
     return []
   }

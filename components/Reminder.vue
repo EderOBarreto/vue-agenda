@@ -1,11 +1,9 @@
 <template>
   <form class="reminder-form">
+    <div v-if="weatherStaus" class="">Weather : {{ weatherStaus }}</div>
     <div class="item">
       <label for="subject">*Subject:</label>
       <input id="subject" v-model="form.subject" type="text" name="suject" />
-      <!-- <div v-if="subjectError" class="error">
-        {{ subjectError }}
-      </div> -->
     </div>
     <div class="item">
       <label for="date">*Date</label>
@@ -49,12 +47,13 @@ class Reminder extends Vue {
   form: IReminder = {
     subject: '',
     date: '',
-    time: '12:00',
+    time: '',
     city: '',
     color: '#000000',
   }
 
   isEditing = false
+  weatherStaus = ''
 
   @Prop() readonly date!: string
 
@@ -62,17 +61,43 @@ class Reminder extends Vue {
 
   @Watch('date')
   setDate() {
+    this.clearFields()
     this.form.date = this.date
   }
 
   @Watch('calInstance.curReminder')
-  saySomething(reminder: IReminder) {
+  setReminder(reminder: IReminder) {
     if (reminder) {
       this.form = { ...reminder }
       this.isEditing = true
     } else {
-      this.clearFields()
       this.isEditing = false
+    }
+  }
+
+  @Watch('form.city')
+  @Watch('form.date')
+  async getWeatherStatus() {
+    if (this.form.date && this.form.city) {
+      let weatherData: any = []
+      await this.$axios
+        .$get(
+          process.env.OPEN_WEATHER_API +
+            '?q=' +
+            this.form.city +
+            '&appid=' +
+            process.env.OPEN_WEATHER_KEY
+        )
+        .then((res: any) => {
+          weatherData = res.list
+        })
+
+      const weatherDay = weatherData.find((forecast: any) => {
+        return forecast.dt_txt.substring(0, 10) === this.form.date
+      })
+      this.weatherStaus = weatherDay
+        ? weatherDay.weather[0].main
+        : 'Not available'
     }
   }
 
@@ -81,7 +106,7 @@ class Reminder extends Vue {
     if (subjectLenght <= 0 || subjectLenght > 30) return false
     if (!this.form.date) return false
     if (!this.form.time) return false
-    if (!this.form.city) return false
+    if (!this.form.city.trim()) return false
     return true
   }
 

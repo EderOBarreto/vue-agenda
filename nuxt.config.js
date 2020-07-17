@@ -34,7 +34,10 @@ export default {
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: [{ src: '~/plugins/vuex-persist', ssr: false }],
+  plugins: [
+    { src: '~/plugins/axios-accessor' },
+    { src: '~/plugins/vuex-persist', ssr: false },
+  ],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components
@@ -45,6 +48,7 @@ export default {
    */
   buildModules: [
     '@nuxt/typescript-build',
+    '@nuxtjs/dotenv',
     // Doc: https://github.com/nuxt-community/stylelint-module
     '@nuxtjs/stylelint-module',
   ],

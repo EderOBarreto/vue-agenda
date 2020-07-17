@@ -42,7 +42,6 @@ import Calendar from '~/store/calendar'
 import { chunkArray } from '~/utils/chunckArray'
 
 import { IDay } from '~/core/models/days'
-// import { IReminder } from '~/core/models/reminder'
 
 import CalendarDay from '~/components/CalendarDay.vue'
 import Reminder from '~/components/Reminder.vue'
@@ -59,7 +58,6 @@ class Index extends Vue {
   calInstance = getModule(Calendar, this.$store)
 
   weekdays = moment.weekdays()
-  // selectedRemind!: IReminder
   remindDate = ''
 
   created() {
