@@ -11,7 +11,7 @@ import { IReminder } from '~/core/models/reminder'
 export default class Calendar extends VuexModule {
   currentDate = moment()
   reminders: { [key: string]: IReminder[] } = {}
-  selectedReminder: IReminder | undefined
+  selectedReminder: IReminder | null = null
   selectedReminderIndex = -1
 
   @Mutation
@@ -45,7 +45,7 @@ export default class Calendar extends VuexModule {
   @Mutation
   deleteSelectedReminder() {
     if (this.selectedReminder && this.selectedReminderIndex >= 0) {
-      const date = this.selectedReminder.date
+      const date = (this.selectedReminder as IReminder).date
       const index = this.selectedReminderIndex
 
       this.reminders = {
@@ -75,7 +75,7 @@ export default class Calendar extends VuexModule {
 
   @Mutation
   clearSelectedReminder() {
-    this.selectedReminder = undefined
+    this.selectedReminder = null
     this.selectedReminderIndex = -1
   }
 

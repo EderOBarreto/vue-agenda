@@ -141,7 +141,7 @@ class Reminder extends Vue {
     this.form = {
       subject: '',
       date: '',
-      time: '12:00',
+      time: '',
       city: '',
       color: '#000000',
     }
