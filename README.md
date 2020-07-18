@@ -77,6 +77,8 @@ To run the project you just need to copy the .env.example, according to the comm
 
 `cp .env.example .env`
 
+Run `yarn` to install the dependencies
+
 Then run `yarn dev` and access the `localhost:3000`
 
 That's it
