@@ -75,6 +75,18 @@ export default CalendarDay
   border: 1px solid #a3a3a3;
   vertical-align: bottom;
   cursor: pointer;
+
+  &:hover {
+    background-color: darken(white, 10%);
+    &::after {
+      content: '+';
+      position: absolute;
+      color: lighten(#000, 50%);
+      top: 5px;
+      right: 5px;
+      font-size: 18px;
+    }
+  }
 }
 
 .calendar-day > .day {
@@ -91,6 +103,10 @@ export default CalendarDay
 .calendar-day.-weekend {
   background: #f2f2f2;
 
+  &:hover {
+    background-color: darken(#f2f2f2, 10%);
+  }
+
   > .day.-active-month {
     color: #366da7;
   }
@@ -98,9 +114,9 @@ export default CalendarDay
 
 .calendar-day > .reminders {
   display: grid;
-  grid-template-rows: repeat(3, 20px);
+  grid-auto-rows: 20px;
   gap: 5px;
-  height: 70px;
+  max-height: 70px;
 }
 
 .calendar-day > .reminders > .reminder {

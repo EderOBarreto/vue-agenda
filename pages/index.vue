@@ -1,10 +1,15 @@
 <template>
   <div class="calendar-page">
     <h1 class="title">Vue Agenda</h1>
-    <div class="control">
-      <button class="button previous" @click="previousMonth">&#60;</button>
-      <button class="button next" @click="nextMonth">&#62;</button>
-      <span class="title">{{ getMonthName }}, {{ getYear }}</span>
+    <div class="actions">
+      <div class="control">
+        <button class="button previous" @click="previousMonth">&#10094;</button>
+        <button class="button next" @click="nextMonth">&#10095;</button>
+        <span class="title">{{ getMonthName }}, {{ getYear }}</span>
+      </div>
+      <button class="add" @click="createReminder(getCurrentDate)">
+        Create
+      </button>
     </div>
     <table class="table">
       <thead class="header">
@@ -60,20 +65,20 @@ class Index extends Vue {
   weekdays = moment.weekdays()
   remindDate = ''
 
-  created() {
-    this.remindDate = moment(this.calInstance.currentDate).format('YYYY-MM-DD')
+  openModal() {
+    this.$refs.modal.openModal()
   }
 
-  private openModal() {
-    this.$refs.modal.openModal()
+  closeModal() {
+    this.$refs.modal.closeModal()
   }
 
   clearSelectedReminder() {
     this.calInstance.clearSelectedReminder()
   }
 
-  closeModal() {
-    this.$refs.modal.closeModal()
+  get getCurrentDate() {
+    return moment(new Date()).format('YYYY-MM-DD')
   }
 
   createReminder(date: string) {
@@ -179,6 +184,8 @@ export default Index
 .calendar-page {
   display: grid;
   background: white;
+  width: 100vw;
+  padding: 0 20px;
 }
 
 .calendar-page > .title {
@@ -193,7 +200,14 @@ export default Index
   align-items: center;
 }
 
-.calendar-page > .control > .button {
+.calendar-page > .actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 35px;
+}
+.calendar-page > .actions > .control > .button {
   background: white;
   border: none;
   margin-right: 10px;
@@ -205,8 +219,23 @@ export default Index
   }
 }
 
-.calendar-page > .control > .title {
+.calendar-page > .actions > .control > .title {
   font-weight: 500;
+}
+
+.calendar-page > .actions > .add {
+  background-color: #2f74b5;
+  height: 30px;
+  width: 100px;
+  color: white;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background-color: darken(#2f74b5, 10%);
+  }
 }
 
 .calendar-page > .table {
